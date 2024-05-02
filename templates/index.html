@@ -1,19 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+
 <head>
-    <title>{{ title }}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <title>Trips Data</title>
+    <style>
+        body {
+            font-family: 'Comfortaa', cursive;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        form {
+            margin:20px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch; /* Adjusted alignment */
+        }
+
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            color: #555;
+        }
+
+        input[type="number"],
+        input[type="range"],
+        select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 15px;
+            background: #ddd;
+            border-radius: 5px;
+            outline: none;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 25px;
+            height: 25px;
+            background: #4caf50;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        input[type="range"]:hover {
+            opacity: 1;
+        }
+
+        .warning-container {
+    position: fixed;
+    width: 20%;
+    top: 2%;
+    left: 10%;
+    /* margin-left: -20%; */
+}
+
+
+        .warning {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background-color: #ff4d4d;
+            color: #fff;
+            padding: 10px;
+            border-radius: 4px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s, visibility 0s linear 0.5s;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+        }
+
+        input[type="submit"] {
+            width: 100%;
+            background-color: #4caf50;
+            color: #fff;
+            cursor: pointer;
+            padding: 10px;
+            border: none;
+            border-radius: 20px;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+        @media only screen and (max-width: 600px) {
+            body {
+                flex-direction: column
+            }
+        }
+        @media only screen and (max-width: 600px) {
+            .warning-container {
+            width: 50%;
+        }
+        }
+        @media only screen and (min-width: 800px) {
+        table,.warning-container {
+            width: 20%;
+        }
+        }
+        select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    padding: 8px;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background: url('data:image/svg+xml;utf8,<svg fill="%23333" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 8px center/15px 15px; /* Use your custom arrow icon */
+}
+
+/* Style the dropdown arrow */
+select::-ms-expand {
+    display: none;
+}
+
+/* Optional: Style the hover state */
+select:hover {
+    border-color: #aaa;
+}
+
+/* Optional: Style the focus state */
+select:focus {
+    outline: none;
+    border-color: #4caf50;
+    box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+}
+input[type="number"],
+input[type="range"],
+select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    padding: 8px;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Style the hover state */
+input[type="number"]:hover,
+input[type="range"]:hover,
+select:hover {
+    border-color: #aaa;
+}
+
+/* Style the focus state */
+input[type="number"]:focus,
+input[type="range"]:focus,
+select:focus {
+    outline: none;
+    border-color: #4caf50;
+    box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+}
+    </style>
+</head>
 
 <body>
-    <div class="App">
-        <header class="App-header">
-            <img src="{{ url_for('static', filename='Octocat.png') }}" class="App-logo" alt="logo" />
-            <p>
-                GitHub Codespaces <span class="heart">♥️</span> Flask
-            </p>
-            <p class="small">
-                Edit <code>templates/index.html</code> and refresh to see your changes!
-            </p>
-        </header>
-    </div>
+    <h1>Trips Data</h1>
+    <form action="/predict" method="post" onsubmit="return validateForm()">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <label for="salary">Salary:</label>
+        <input type="number" name="salary" id="salary" required>
+
+        <label for="city">City:</label>
+        <select name="city" required>
+            {% for city_option in city_options %}
+                <option value="{{ city_option }}">{{ city_option }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="age">Age: <span id="ageValue">18</span></label>
+        <input type="range" name="age" min="18" max="100" value="18" oninput="updateAgeValue(this.value)" required>
+
+        <label for="vacation_preference">Vacation Preference:</label>
+        <select name="vacation_preference" required>
+            {% for preference_option in vacation_preference_options %}
+                <option value="{{ preference_option }}">{{ preference_option }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="transport_preference">Transport Preference:</label>
+        <select name="transport_preference" required>
+            {% for transport_option in transport_preference_options %}
+                <option value="{{ transport_option }}">{{ transport_option }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="family_members">Family Members: <span id="familyValue">0</span></label>
+        <!-- <input type="number" name="family_members" required> -->
+        <input type="range" name="family_members" min="0" max="6" value="0" oninput="updateFamilyValue(this.value)" required>
+
+
+        <div class="warning-container">
+            <div class="warning" id="salaryWarning"></div>
+        </div>
+
+        <div class="button-container">
+            <input type="submit" value="Submit">
+        </div>
+    </form>
+
+    <script>
+        function updateAgeValue(value) {
+            document.getElementById('ageValue').textContent = value;
+        }
+        function updateFamilyValue(value) {
+            document.getElementById('familyValue').textContent = value;
+        }
+
+        function validateForm() {
+            let salary = document.getElementById('salary').value;
+            let salaryWarning = document.getElementById('salaryWarning');
+
+            if (salary < 15000) {
+                salaryWarning.textContent = 'Salary must be greater than 15000₽';
+                salaryWarning.style.opacity = 1;
+                salaryWarning.style.visibility = 'visible';
+                setTimeout(function () {
+                    salaryWarning.style.opacity = 0;
+                    salaryWarning.style.visibility = 'hidden';
+                    setTimeout(function () {
+                        salaryWarning.textContent = ''; // Clear warning
+                    }, 500);
+                }, 2000);
+                return false; // Prevent form submission
+            } else {
+                salaryWarning.style.opacity = 0;
+                salaryWarning.style.visibility = 'hidden';
+                setTimeout(function () {
+                    salaryWarning.textContent = ''; // Clear warning
+                }, 500);
+                return true; // Allow form submission
+            }
+        }
+    </script>
 </body>
 
 </html>
